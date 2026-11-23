@@ -2,7 +2,6 @@ import boto3  # noqa
 import datetime
 from http.client import RemoteDisconnected
 from google.cloud import storage  # type: ignore
-import importlib
 import json
 import jsonschema
 import logging
@@ -165,12 +164,8 @@ class Scraper(scrapelib.Scraper):
         self.error = self.logger.error
         self.critical = self.logger.critical
 
-        modname = os.environ.get("SCRAPE_OUTPUT_HANDLER")
-        if modname is None:
-            self.scrape_output_handler = None
-        else:
-            handler = importlib.import_module(modname)
-            self.scrape_output_handler = handler.Handler(self)
+        # simplified from allowing SCRAPE_OUTPUT_HANDLER env var
+        self.scrape_output_handler = None
 
         if self.http_resilience_mode:
             self.headers["User-Agent"] = get_random_user_agent()
@@ -237,7 +232,7 @@ class Scraper(scrapelib.Scraper):
         # Temporarily override any HTTP_PROXY env var
         # because GCP client uses requests, and it doesn't like self-signed cert in chain
         # so we do NOT want to use http proxy when connecting to google
-        prior_proxy_env = os.getenv('HTTP_PROXY') or ""
+        prior_proxy_env = os.getenv("HTTP_PROXY") or ""
         os.environ["HTTP_PROXY"] = ""
         os.environ["HTTPS_PROXY"] = ""
         if GCP_PROJECT is None or BUCKET_NAME is None:
@@ -303,9 +298,6 @@ class Scraper(scrapelib.Scraper):
             # Periodically push data to GCS by data class
             if self.realtime:
                 self.upload_to_gcs_real_time(obj)
-
-        else:
-            self.scrape_output_handler.handle(obj)
 
         # validate after writing, allows for inspection on failure
         try:
@@ -415,7 +407,9 @@ class Scraper(scrapelib.Scraper):
             return super().get(url, **kwargs)
 
     def post(self, url, data=None, json=None, **kwargs):
-        request_func = lambda: super(Scraper, self).post(url, data=data, json=json, **kwargs)  # noqa: E731
+        request_func = lambda: super(Scraper, self).post(  # noqa: E731
+            url, data=data, json=json, **kwargs
+        )
         if self.http_resilience_mode:
             return self.request_resiliently(request_func)
         else:

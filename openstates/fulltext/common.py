@@ -1,7 +1,5 @@
 import typing
 import re
-import tempfile
-import textract  # type: ignore
 
 from .utils import (
     pdfdata_to_text,
@@ -123,19 +121,6 @@ def extractor_for_elements_by_xpath(bill_text_element_selector: str) -> Extracto
         return clean(text_inside_matching_tag)
 
     return _my_extractor
-
-
-def textract_extractor(**kwargs: str) -> ExtractorFunc:
-    """ pass through kwargs to textextract.process """
-    assert "extension" in kwargs, "Must supply extension"
-
-    def func(data: bytes, metadata: Metadata) -> str:
-        with tempfile.NamedTemporaryFile(delete=False) as tmpf:
-            tmpf.write(data)
-            tmpf.flush()
-            return textract.process(tmpf.name, **kwargs).decode()
-
-    return func
 
 
 def extract_from_code_tags_html(data: bytes, metadata: Metadata) -> str:

@@ -10,7 +10,6 @@ from .common import (
     extractor_for_element_by_id,
     extractor_for_element_by_xpath,
     extract_from_code_tags_html,
-    textract_extractor,
     Metadata,
     ExtractorFunc,
 )
@@ -18,7 +17,7 @@ from .de import handle_delaware
 
 
 class DoNotDownload:
-    """ Sentinel to indicate that nothing should be downloaded """
+    """Sentinel to indicate that nothing should be downloaded"""
 
 
 DOCX_MIMETYPE = (
@@ -41,7 +40,7 @@ CONVERSION_FUNCTIONS = {
     },
     "co": {"application/pdf": extract_sometimes_numbered_pdf},
     "ct": {"text/html": extract_from_p_tags_html, "application/pdf": DoNotDownload},
-    "dc": {"application/pdf": textract_extractor(extension="pdf", method="tesseract")},
+    "dc": {"application/pdf": extract_sometimes_numbered_pdf},
     "de": {
         "text/html": handle_delaware,
         "application/pdf": handle_delaware,
@@ -106,8 +105,8 @@ CONVERSION_FUNCTIONS = {
     "tn": {"application/pdf": extract_simple_pdf},
     "ut": {"application/pdf": extract_line_numbered_pdf},
     "pr": {
-        "application/msword": textract_extractor(extension="doc"),
-        DOCX_MIMETYPE: textract_extractor(extension="docx"),
+        "application/msword": DoNotDownload,
+        DOCX_MIMETYPE: DoNotDownload,
     },
     "pa": {
         "application/msword": DoNotDownload,

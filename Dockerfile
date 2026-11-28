@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.13.18-slim-trixie
 LABEL maintainer="Jesse Mortenson <Jesse.Mortenson@sai360.com>"
 
 ENV PYTHONUNBUFFERED=1
@@ -13,7 +13,6 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
       libgdal-dev \
       poppler-utils \
       antiword \
-      tesseract-ocr \
       git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \

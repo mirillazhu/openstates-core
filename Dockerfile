@@ -13,7 +13,6 @@ RUN apt-get update -qq && apt-get install -y -qq --no-install-recommends \
       libgdal-dev \
       poppler-utils \
       antiword \
-      tesseract-ocr \
       git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
